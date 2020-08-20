@@ -1,0 +1,70 @@
+---
+title: "Summary Data - 'Kinetics'"
+authors: "Kartaram et al., 2020"
+date: "`r Sys.time()`"
+output: 
+  html_document:
+    keep_md: true
+params:
+  path_out: !r here::here('inst', 'final_figures_paper')
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+library(tidyverse)
+library(readr)
+library(knitr)
+#install.packages("kableExtra")
+library(kableExtra)
+#install.packages("flextable")
+library(flextable)
+# install.packages("officer")
+library(officer)
+
+summary_data_kinetics <- read_csv(
+  file.path(
+    params$path_out,
+    "summary_data_kinetics.csv"
+  )
+)
+
+summary_data_kinetics <- summary_data_kinetics %>%
+  dplyr::mutate(
+    mean = round(mean, digits = 3),
+    sd = round(sd, digits = 2)
+  ) 
+
+
+table_formatted <- flextable(
+  summary_data_kinetics
+)
+```
+
+```{r, echo=FALSE}
+
+# fix LYMFO
+ind <- summary_data_kinetics$analyte == "LYMFO_ABS_CORR" 
+summary_data_kinetics$analyte[ind] <- "LYMPHO_ABS"
+
+
+analytes <- summary_data_kinetics$analyte %>% unique()
+analytes %>%
+  enframe() %>%
+  dplyr::rename(analyte = value) %>%
+  select(analyte) %>%
+  head(n = 6) %>%
+  DT::datatable() 
+
+
+```
+
+```{r, echo=FALSE}
+summary_data_kinetics %>%
+  head(n = 6) %>%
+DT::datatable()
+  
+```
+

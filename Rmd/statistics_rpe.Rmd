@@ -1,0 +1,100 @@
+---
+title: "Statistics RPE"
+author: "Marc A.T. Teunis"
+date: "2/8/2020"
+output: html_document
+---
+
+## Packages
+```{r, packages, error=FALSE, message=FALSE, warning=FALSE}
+library(gramlyr)
+library(tidyverse)
+library(readxl)
+library(fast)
+library(Hmisc)
+library(car)
+library(gtools)
+library(naniar)
+library(furrr)
+library(future)
+library(pastecs)
+library(lme4)
+library(nlme)
+library(citrulliner)
+library(multcomp)
+```
+
+```{r, cache=TRUE, results='hide', include=FALSE}
+knitr::purl(
+  here::here(
+    "Rmd",
+    "kinetics.Rmd"
+  )
+)
+
+source("kinetics.R")
+```
+
+Best Model
+```{r}
+## mixed effects model
+ model <-  lme(rpe ~ time * protocol, 
+                    data = rpe_scores_rebuttal, 
+                    method = "ML", 
+                    na.action = "na.omit", 
+                    random = ~1 | subject)
+```
+
+
+## Results
+
+The model nummer 1 is the best model (the 'simple' mixed effects model) without nesting of subject in protocol in time, where rpe is not log transformed. The anova between the models reveals this as well as the residuals plots and the qqplot of the residuals of model1
+
+```
+Model - Fit: 
+lme.formula(
+  fixed = rpe ~ time * protocol, 
+  data = rpe_scores_rebuttal, 
+  random = ~1 | subject, 
+  method = "ML", na.action = "na.omit"
+  )
+```
+
+The residual plot of model1 shows the least systematic structure
+```{r}
+plot(model$residuals, model$fitted)
+```
+
+Normality check on the residuals reveals that there is a significant P, which suggests deviation from normality.
+
+H0 for Shapiro -> observations were drawn from a Normal distribution vs
+H.alt observation were not drawn from a normal distribution.
+```{r}
+shapiro.test(model$residuals)
+qqnorm(model$residuals)
+qqline(model$residuals)
+hist(model$residuals) ## the distribution of the residuals is somewhat skewed
+```
+
+## The models main effects
+```{r}
+anova(model)
+```
+
+## Model summary
+```{r}
+summary(model)
+```
+
+## The models pair-wise comparisons, according Tukey, with corrections for multiple comparisons.
+
+see: https://stats.stackexchange.com/questions/5250/multiple-comparisons-on-a-mixed-effects-model
+```{r}
+summary(glht(model, linfct=mcp(time="Tukey")))
+summary(glht(model, linfct=mcp(protocol="Tukey")))
+
+
+```
+
+
+
