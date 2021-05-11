@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 knitr::opts_chunk$set(echo = TRUE, 
                       warning = FALSE,
                       error = FALSE,
-                      message = FALSE, fig.width = 8, fig.height = 6)
+                      message = FALSE, fig.width = 6, fig.height = 3.5)
 ```
 
 ## Packages
@@ -584,7 +584,7 @@ analytes_final
 
 ## Heatmap graps
 
-```{r, individual_heatmaps, fig.show='hide'}
+```{r, individual_heatmaps, include=FALSE}
 heatmap_p_values <- both %>%
   dplyr::filter(statistic == "p_value") %>%
   mutate(log10_p = log10(value)) %>%
@@ -611,7 +611,7 @@ heatmap_p_values
 #  labs(fill = "F value") 
 #facet_wrap(~ statistic)
 
-heatmap_p_values
+# heatmap_p_values
 
  ggsave(plot = heatmap_p_values,  filename = file.path(
     params$path_out,
@@ -692,7 +692,7 @@ heatmap_f_values
 
 ## Figure 2
 This is the code for the heatmap in Figure 2 of the manuscript
-```{r, eval=FALSE}
+```{r, fig.width=12, fig.height=24}
 
 invalid_params <- c("gfra", "ip10", "facd", "crph", "tnfa")
 
@@ -723,10 +723,10 @@ heatmap_p_values <- both %>%
   mutate(stars = as.character(stars_noquote)) %>%
     arrange(desc(value))
 
-heatmap_p_values
+#vheatmap_p_values
 
-heatmap_p_values %>%
-  dplyr::filter(analyte == "lys")
+#heatmap_p_values %>%
+#  dplyr::filter(analyte == "lys")
 
 
 # checking other duplicates
@@ -812,7 +812,7 @@ with_stars
 #         )
 
 
-heatmap_p_values$stars_noquote %>% unique()
+# heatmap_p_values$stars_noquote %>% unique()
 
 
 
@@ -1035,11 +1035,11 @@ analyte = "ala"
 kinetics::draw_lines(DF = data_split[[1]], palette_graph = palette)
 
 test_lines <- print_lines(analyte = "SODIUM")
-test_lines
+#test_lines
 
 
 test_lines <- print_lines(analyte = "INSULINE")
-test_lines
+#test_lines
 
 run_plotlist <- function(){
   plot_list <- lapply(levels(data_summary$analyte), print_lines)
@@ -1051,7 +1051,7 @@ run_plotlist <- function(){
 ```
 
 ## Panels
-```{r, panels_plot_list}
+```{r, panels_plot_list, eval=FALSE}
 
 ## test
 kinetics::print_lines_panel("GLU_NS", x_pos = c(1,2))
@@ -1115,7 +1115,7 @@ panel_plot_list <- map2(
   .f = print_lines_panel
   )
 
-panel_plot_list
+# panel_plot_list
 ## check x_pos for GLU_NS
 names(panel_plot_list) <- levels(analyte_data$analyte)
 names(panel_plot_list)
@@ -1203,7 +1203,7 @@ figure_1 <- cowplot::plot_grid( p1_a + theme(legend.position="none"),
            label_size = label_size
            )
 
-figure_1
+#cfigure_1
 
 
 legend_1 <- get_legend(p1_a + theme(legend.position="bottom"))
@@ -1516,5 +1516,3 @@ readr::write_csv(data_paper_all_final,
                  )
                 
 ```
-
-
